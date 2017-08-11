@@ -24,7 +24,7 @@
 
 %% Input/Output for HazardSapAPI
 
-function [JointCoords,FrameJointConn,FloorConn,WallConn,T,mass_floor]=HazardSapAPI(FilePath,units,elev)
+function [FrameObjNames,JointCoords,FrameJointConn,FloorConn,WallConn,T,mass_floor,FilePathResponse]=HazardSapAPI(FilePath,units,elev)
 %-------------------------------------------------------------------------%
 %Input
 %FilePath: string with path to file
@@ -40,6 +40,9 @@ function [JointCoords,FrameJointConn,FloorConn,WallConn,T,mass_floor]=HazardSapA
 
 %-------------------------------------------------------------------------%
 %Output
+%FrameObjNames: List of Names of Frames Members (strings) - these are
+%needed to run the ResponseSapAPI.m file
+
 %JointCoords: nx4 matrix - Col1==Joint Number, Col2to4==(x,y,z) in GCS
 
 %FrameJointConn: nx9 matrix - Col1==FrameName, Col2==iend joint number, Col3to5 (x,y,z) of
@@ -77,7 +80,7 @@ SapObject = helper.CreateObject(ProgramPath);
  
 %% start Sap2000 application
 SapObject.ApplicationStart;
-
+SapObject.Hide; %This is here to prevent SAP from fully opening (runs our analysis faster)
 %% create SapModel object
 SapModel = SapObject.SapModel;
 
@@ -533,7 +536,9 @@ mass=sum(zreaction);
 
 %% Final step: Close out of SAP:
 %save .sdb file as another model (this helps us keep the original, no BCS model):
-tag2='_Modal.sdb';
+tag2='_Modal.sdb'; %this first tag is simply so we can make sure that this model gets saved (needs the .sdb for this to happen)
+tag_Response='_Modal'; %this is being added here so that we can pass the model to the ResponseSapAPI.m script later
+FilePathResponse=strcat(FilePath,tag_Response); %this is the name that will be provided as input for the ResponseSapAPI.m script
 FileName=strcat(FilePath,tag2);
 SapObject.SapModel.File.Save(FileName);
 
