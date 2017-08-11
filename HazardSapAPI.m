@@ -243,7 +243,7 @@ WallConn=AreaConn(find(AreaTag==0),2:end);
 %In order to assign this boundary condition we need to know where the
 %different heights of the floor slabs are (regardless if SAP model supplied
 %does or does not have floors on it:
-
+elev=elev*12; %This is just here to make sure we are in the right units
 %We pull floor elevation from the outside (Python): elev variable
 
 %First define how many diaphragm constraints are needed:
